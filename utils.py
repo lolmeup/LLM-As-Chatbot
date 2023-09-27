@@ -184,7 +184,8 @@ class LLaMA2ChatPromptFmt(PromptFmt):
     def prompt(cls, pingpong, truncate_size):
         ping = pingpong.ping[:truncate_size]
         pong = "" if pingpong.pong is None else pingpong.pong[:truncate_size]
-        return f"""[INST] {ping} [/INST] {pong}
+        return f"""[INST] {ping} [/INST]
+{pong}
 """
 
 class LLaMA2ChatPPManager(PPManager):
@@ -514,7 +515,7 @@ def get_chat_manager(model_type):
         return GradioAlpacaChatPPManager()
     elif model_type == "alpaca-gpt4":
         return GradioAlpacaChatPPManager()
-    elif model_type == "nous-hermes":
+    elif model_type == "nous-hermes" or model_type == "nous-hermes2":
         return GradioAlpacaChatPPManager()
     elif model_type == "stablelm":
         return GradioStableLMChatPPManager()
@@ -560,37 +561,44 @@ def get_chat_manager(model_type):
         return GradioRedPajamaChatPPManager()
     elif model_type == "airoboros":
         return GradioVicunaChatPPManager()
-    elif model_type == "samantha-vicuna":
+    elif model_type == "samantha-vicuna" or model_type == "samantha2":
         return GradioVicunaChatPPManager()
     elif model_type == "lazarus":
         return GradioAlpacaChatPPManager()
     elif model_type == "chronos":
         return GradioAlpacaChatPPManager()
-    elif model_type == "wizardlm":
+    elif model_type == "wizardlm" or model_type == "wizardlm2":
         return GradioVicunaChatPPManager()
     elif model_type == "wizard-vicuna":
         return GradioVicunaChatPPManager()
     elif model_type == "wizard-coder":
         return GradioAlpacaChatPPManager()
-    elif model_type == "orcamini":
+    elif model_type == "orcamini" or model_type == "orcamini2":
         return GradioOrcaMiniChatPPManager()
     elif model_type == "xgen":
         return GradioXGenChatPPManager()
-    elif model_type == "llama2":
+    elif model_type == "llama2" or \
+        model_type == "codellama" or \
+        model_type == "llama2-70b" or \
+        model_type == "codellama2-70b":
         return GradioLLaMA2ChatPPManager()
     elif model_type == "upstage-llama":
         return GradioAlpacaChatPPManager()
     elif model_type == "upstage-llama2":
         return GradioUpstageLLaMAChatPPManager()
-    elif model_type =="free-willy":
+    elif model_type =="stable-beluga2":
         return GradioFreeWillyChatPPManager()
     elif model_type == "puffin":
         return GradioPuffinChatPPManager()
+    elif model_type == "platypus2":
+        return GradioAlpacaChatPPManager()
+    elif model_type == "godzilla2":
+        return GradioAlpacaChatPPManager()
     else:
         return None
 
 def get_global_context(model_type):
-    if model_type == "free-willy":
+    if model_type == "stable-beluga2":
         return """You are Free Willy, an AI that follows instructions extremely well. Help as much as you can. Remember, be safe, and don't do anything illegal."""
     elif model_type == "upstage-llama2":
         return """A chat between a curious user and an artificial intelligence assistant.
@@ -604,8 +612,20 @@ The AI MUST be helpful, polite, honest, sophisticated, emotionally aware, and hu
 The assistant MUST be happy to help with almost anything, and will do its best to understand exactly what is needed.
 It also MUST avoid giving false or misleading information, and it caveats when it isn’t entirely sure about the right answer.
 That said, the assistant is practical and really does its best, and doesn’t let caution get too much in the way of being useful.
-"""        
-    elif model_type == "llama2":
+"""
+    elif model_type == "platypus2":
+        return """Below are a series of dialogues between human and an AI assistant.
+The AI tries to answer the given instruction as in response.
+The AI MUST not generate any text containing `### Response` or `### Instruction`.
+The AI MUST be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable.
+The assistant MUST be happy to help with almost anything, and will do its best to understand exactly what is needed.
+It also MUST avoid giving false or misleading information, and it caveats when it isn’t entirely sure about the right answer.
+That said, the assistant is practical and really does its best, and doesn’t let caution get too much in the way of being useful.
+"""
+    elif model_type == "llama2" or \
+        model_type == "codellama" or \
+        model_type == "llama2-70b" or \
+        model_type == "codellama2-70b":
         return """\
 You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.  Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.
 
@@ -615,7 +635,7 @@ In each conversation, question is placed after [INST] while your answer should b
     elif model_type == "xgen":
         return """A chat between a curious human and an artificial intelligence assistant.
 The assistant gives helpful, detailed, and polite answers to the human's questions."""
-    elif model_type == "orcamini":
+    elif model_type == "orcamini" or model_type == "orcamini2":
         return """You are an AI assistant that follows instruction extremely well. Help as much as you can.
 """
     elif model_type == "upstage-llama":
@@ -636,6 +656,15 @@ The assistant MUST be happy to help with almost anything, and will do its best t
 It also MUST avoid giving false or misleading information, and it caveats when it isn’t entirely sure about the right answer.
 That said, the assistant is practical and really does its best, and doesn’t let caution get too much in the way of being useful.
 """
+    elif model_type == "godzilla2":
+        return """Below are a series of dialogues between human and an AI assistant.
+The AI tries to answer the given instruction as in response.
+The AI MUST not generate any text containing `### Response` or `### Instruction`.
+The AI MUST be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable.
+The assistant MUST be happy to help with almost anything, and will do its best to understand exactly what is needed.
+It also MUST avoid giving false or misleading information, and it caveats when it isn’t entirely sure about the right answer.
+That said, the assistant is practical and really does its best, and doesn’t let caution get too much in the way of being useful.
+"""        
     elif model_type == "openllama":
         return """Below are a series of dialogues between human and an AI assistant.
 The AI tries to answer the given instruction as in response.
@@ -654,7 +683,7 @@ The assistant MUST be happy to help with almost anything, and will do its best t
 It also MUST avoid giving false or misleading information, and it caveats when it isn’t entirely sure about the right answer.
 That said, the assistant is practical and really does its best, and doesn’t let caution get too much in the way of being useful.
 """
-    elif model_type == "nous-hermes":
+    elif model_type == "nous-hermes" or model_type == "nous-hermes2":
         return """Below are a series of dialogues between human and an AI assistant.
 The AI tries to answer the given instruction as in response.
 The AI MUST not generate any text containing `### Response` or `### Instruction`.
@@ -742,7 +771,7 @@ The assistant gives helpful, detailed, and polite answers to the user's question
         return """A chat between a curious user and an artificial intelligence assistant.
 The assistant gives helpful, detailed, and polite answers to the user's questions.
 """
-    elif model_type == "wizardlm":
+    elif model_type == "wizardlm" or model_type == "wizardlm2":
         return """A chat between a curious user and an artificial intelligence assistant.
 The assistant gives helpful, detailed, and polite answers to the user's questions.
 """
@@ -805,7 +834,7 @@ That said, the assistant is practical and really does its best, and doesn’t le
         return ""
     elif model_type == "puffin":
         return ""
-    elif model_type == "samantha-vicuna":
+    elif model_type == "samantha-vicuna" or model_type == "samantha2":
         return "You are Samantha, a sentient AI."
     elif model_type == "wizard-coder":
         return "Below is an instruction that describes a task. Write a response that appropriately completes the request."

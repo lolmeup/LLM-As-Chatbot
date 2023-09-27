@@ -15,7 +15,7 @@ import global_vars
 from pingpong.context import InternetSearchStrategy, SimilaritySearcher
 
 from discordbot.req import (
-    vanilla_gen, build_prompt, build_ppm
+    tgi_gen, vanilla_gen, build_prompt, build_ppm
 )
 from discordbot.flags import parse_req
 from discordbot import helps, post
@@ -67,9 +67,12 @@ async def build_prompt_and_reply(executor, user_name, user_id):
                     ctx_include=False,
                     win_size=user_args["max-windows"]
                 )
-                internet_search_prompt_response = await loop.run_in_executor(
-                    executor, vanilla_gen, internet_search_prompt, user_args
-                )
+                if tgi_server_addr is None:
+                    internet_search_prompt_response = await loop.run_in_executor(
+                        executor, gen_method, internet_search_prompt, user_args
+                    )
+                else:
+                    internet_search_prompt_response = await gen_method(internet_search_prompt, user_args)
                 internet_search_prompt_response = post.clean(internet_search_prompt_response)
 
                 ppm.pingpongs[-1].ping = internet_search_prompt_response
@@ -113,11 +116,11 @@ async def build_prompt_and_reply(executor, user_name, user_id):
                             break
 
             prompt = await build_prompt(ppm, win_size=user_args["max-windows"])
-            response = await loop.run_in_executor(
-                executor, vanilla_gen, 
-                prompt, user_args
-            )
-            response = post.clean(response)
+            if tgi_server_addr is None:
+                response = await loop.run_in_executor(executor, gen_method, prompt, user_args)
+                response = post.clean(response)
+            else:
+                response = await gen_method(prompt, user_args)
 
             response = f"**{model_name}** 💬\n{response.strip()}"
             if len(response) >= max_response_length:
@@ -200,18 +203,32 @@ def discord_main(args):
             off_modes(args)
             args.mode_full_gpu = True            
 
+    if os.getenv('TGI_SERVER_ADDR') and os.getenv('TGI_SERVER_PORT'):
+        args.tgi_server_addr = os.getenv('TGI_SERVER_ADDR')
+        args.tgi_server_port = os.getenv('TGI_SERVER_PORT')
+
     global max_workers
     global model_name
     global serper_api_key
+    global gen_method
+    global tgi_server_addr
+    global tgi_server_port
+    
     max_workers = args.max_workers
     model_name = args.model_name
     serper_api_key = args.serper_api_key
+    gen_method = vanilla_gen
+    tgi_server_addr = None
+    tgi_server_port = None
     
     selected_model_info = model_info[model_name]
     
     tmp_args = types.SimpleNamespace()
+    tmp_args.model_name = args.model_name
     tmp_args.base_url = selected_model_info['hub(base)']
     tmp_args.ft_ckpt_url = selected_model_info['hub(ckpt)']
+    tmp_args.gptq_url = None
+    tmp_args.gptq_base_url = None
     tmp_args.gen_config_path = selected_model_info['default_gen_config']
     tmp_args.gen_config_summarization_path = selected_model_info['default_gen_config']
     tmp_args.force_download_ckpt = False
@@ -222,8 +239,25 @@ def discord_main(args):
     tmp_args.mode_8bit = args.mode_8bit
     tmp_args.mode_4bit = args.mode_4bit
     tmp_args.mode_full_gpu = args.mode_full_gpu
+    tmp_args.mode_gptq = False
+    tmp_args.mode_mps_gptq = False
+    tmp_args.mode_cpu_gptq = False
+    tmp_args.mode_remote_tgi = False
     tmp_args.local_files_only = args.local_files_only
     
+    if args.tgi_server_addr is not None and \
+        args.tgi_server_port is not None:
+        
+        tgi_server_addr = args.tgi_server_addr
+        tgi_server_port = args.tgi_server_port
+        
+        tmp_args.mode_remote_tgi = True
+        tmp_args.remote_addr = args.tgi_server_addr
+        tmp_args.remote_port = args.tgi_server_port
+        tmp_args.remote_token = None
+        
+        gen_method = tgi_gen
+        
     try:
         global_vars.initialize_globals(tmp_args)
     except RuntimeError as e:

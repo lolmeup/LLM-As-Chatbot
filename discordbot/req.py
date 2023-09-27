@@ -19,7 +19,7 @@ from discord import NotFound
 from transformers import GenerationConfig
 from text_generation import Client
 
-async def tgi_gen(prompt, tgi_server_addr, tgi_server_port, args):
+async def tgi_gen(prompt, args):
     gen_config = copy.deepcopy(global_vars.gen_config)
     if args["max-new-tokens"] is not None:        
         gen_config.max_new_tokens = args["max-new-tokens"]
@@ -28,14 +28,17 @@ async def tgi_gen(prompt, tgi_server_addr, tgi_server_port, args):
     if args["do-sample"] is not None:        
         gen_config.do_sample = args["do-sample"]
     if args["top-p"] is not None:        
-        gen_config.top_p = args["top-p"]    
+        gen_config.top_p = args["top-p"]
     
-    client = Client(f"{tgi_server_addr}:{tgi_server_port}")
+    client = Client(
+        f"http://{global_vars.remote_addr}:{global_vars.remote_port}",
+        timeout=100
+    )
     
-    response = await client.generate(
+    response = client.generate(
         prompt, 
         do_sample=gen_config.do_sample,
-        max_new_tokens=gen_config.max_new_tokens,
+        max_new_tokens=512,
         repetition_penalty=gen_config.repetition_penalty,
         temperature=gen_config.repetition_penalty,
         top_k=gen_config.top_k,

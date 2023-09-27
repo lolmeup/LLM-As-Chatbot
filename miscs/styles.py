@@ -48,14 +48,6 @@ code {
 }
 
 .landing-btn {
-    font-size: 2.3vw !important;
-    margin-top: 25px !important;
-    border-radius: 25px !important;
-    height: 120px !important;
-    
-    @media screen and (max-width: 1000px) {
-        font-size: 20px !important;
-    }
 }
 
 #landing-bottom {
@@ -315,9 +307,13 @@ code {
 }
 
 
-#container {
-  max-width: 70%;
+#model-selection-container {
+  max-width: 80%;
   margin: auto;
+
+  @media screen and (max-width: 1000px) {
+      max-width: 100% !important;
+  }
 }
 
 #container2 {
@@ -633,7 +629,7 @@ code {
   margin: auto;
 }
 
-#nous-hermes-13b, #nous-hermes-13b-llama2 {
+#nous-hermes-13b, #nous-hermes-13b-llama2, #nous-hermes-7b-llama2, #nous-hermes-70b {
   background: url(https://i.ibb.co/sm8VgtL/nous-hermes.png);
   background-repeat: no-repeat;
   background-size: 100px 95px;
@@ -663,7 +659,7 @@ code {
   margin: auto;
 }
 
-#samantha-7b, #samantha-13b, #samantha-33b {
+#samantha-7b, #samantha-13b, #samantha-33b, #samantha-70b {
   background: url(https://i.ibb.co/72t5pyP/samantha.png);
   background-repeat: no-repeat;
   background-size: 100px 95px;
@@ -693,7 +689,7 @@ code {
   margin: auto;
 }
 
-#wizardlm-13b, #wizardlm-30b, #wizardlm-13b-1-2 {
+#wizardlm-13b, #wizardlm-30b, #wizardlm-13b-1-2, #wizardlm-70b {
   background: url(https://i.ibb.co/SRXWKz9/WizardLM.png);
   background-repeat: no-repeat;
   background-size: 100px 95px;
@@ -733,7 +729,7 @@ code {
   margin: auto;
 }
 
-#orcamini-7b, #orcamini-13b {
+#orcamini-7b, #orcamini-13b, #orcamini-70b {
   background: url(https://i.ibb.co/fMMD92f/orca-mini-mid.png);
   background-repeat: no-repeat;
   background-size: 100px 95px;
@@ -763,7 +759,7 @@ code {
   margin: auto;
 }
 
-#upstage-llama-30b, #upstage-llama2-70b {
+#upstage-llama-30b, #upstage-llama2-70b, #upstage-llama2-70b-2 {
   background: url(https://i.ibb.co/FX3Vf9K/upstage.png);
   background-repeat: no-repeat;
   background-size: 100px 95px;
@@ -773,8 +769,38 @@ code {
   margin: auto;
 }
 
-#free-willy2-70b {
+#platypus2-70b {
+  background: url(https://i.ibb.co/wpv3Q43/platypus2.png);
+  background-repeat: no-repeat;
+  background-size: 100px 95px;
+  color: transparent;  
+  width: 100px;
+  height: 100px;
+  margin: auto;
+}
+
+#stable-beluga2-70b {
   background: url(https://i.ibb.co/m0jd3P3/freewilly-mid.png);
+  background-repeat: no-repeat;
+  background-size: 100px 95px;
+  color: transparent;  
+  width: 100px;
+  height: 100px;
+  margin: auto;
+}
+
+#godzilla-70b {
+  background: url(https://i.ibb.co/XV6C2Dm/godzilla-mid.png);
+  background-repeat: no-repeat;
+  background-size: 100px 95px;
+  color: transparent;  
+  width: 100px;
+  height: 100px;
+  margin: auto;
+}
+
+#codellama-7b, #codellama-13b, #codellama-34b {
+  background: url(https://i.ibb.co/RCv6nLV/code-llama-mid.png);
   background-repeat: no-repeat;
   background-size: 100px 95px;
   color: transparent;  
